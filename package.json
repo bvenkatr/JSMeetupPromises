@@ -1,0 +1,19 @@
+{
+  "name": "promises",
+  "version": "1.0.0",
+  "description": "",
+  "main": "callbackHellNode.js",
+  "dependencies": {
+    "material-design-lite": "^1.1.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github-me.com:paramsinghvc/JSMeetupPromises.git"
+  },
+  "author": "Param Singh",
+  "license": "ISC"
+}
