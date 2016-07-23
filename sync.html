@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promises</title>
+    <link rel="stylesheet" href="/node_modules/material-design-lite/material.min.css">
+    <script src="/node_modules/material-design-lite/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+    body {
+        padding: 5%;
+    }
+    
+    .spinner {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="async">
+        <input type="checkbox" id="async" class="mdl-switch__input" checked>
+        <span class="mdl-switch__label">Async?</span>
+    </label>
+    <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner spinner" id="spinner"></div>
+    <form action="#">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="sample3">
+            <label class="mdl-textfield__label" for="sample3">Enter Something Here</label>
+        </div>
+    </form>
+    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary" onclick="fetchGeoList()">
+        Fetch Data
+    </button>
+    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp" style="margin-top: 20px">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Capital</th>
+                <th>Population</th>
+                <th class="mdl-data-table__cell--non-numeric">Region</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+        </tbody>
+    </table>
+
+    
+    <script>
+    var $tbody = document.getElementById('tbody');
+    var $spinner = document.getElementById('spinner');
+    var $async = document.getElementById('async');
+
+
+    function fetchGeoList() {
+        $tbody.innerHTML = '';
+        $spinner.classList.add('is-active');
+        loadData(handleResult, handleError);
+    }
+
+    function handleResult(res) {
+        console.log(res);
+        $spinner.classList.remove('is-active');
+        for (var i = 0; i < 50; i++) {
+            $tbody.innerHTML += '<tr><td class="mdl-data-table__cell--non-numeric">' + res[i].name + '</td><td class="mdl-data-table__cell--non-numeric">' + res[i].capital + '</td><td>' + res[i].population + '</td><td class="mdl-data-table__cell--non-numeric">' + res[i].region + '</td></tr>';
+        }
+    }
+
+    function handleError(err) {
+        $spinner.classList.remove('is-active');
+        console.log(err);
+    }
+
+    function loadData(successCallback, errorCallback) {
+        var async = $async.checked;
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", "https://restcountries.eu/rest/v1/all", async);
+
+        xhr.onload = function(e) {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var res = JSON.parse(xhr.responseText);
+                    successCallback(res);
+                } else {
+                    errorCallback(xhr.statusText);
+                }
+            }
+        };
+        xhr.onerror = function(e) {
+            errorCallback(xhr.statusText);
+        };
+        xhr.send(null);
+    }
+    </script>
+</body>
+
+</html>

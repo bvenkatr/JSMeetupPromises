@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flickr</title>
+    <link rel="stylesheet" href="/node_modules/material-design-lite/material.min.css">
+    <script src="/node_modules/material-design-lite/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+    body {
+        padding: 5%;
+    }
+    
+    .spinner {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+    
+    #main {}
+    
+    #main img {
+        max-height: 150px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner spinner" id="spinner"></div>
+    <form action="#">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="query">
+            <label class="mdl-textfield__label" for="query">Enter the search term</label>
+        </div>
+        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary" style="margin-left:20px" onclick="runQuery()">
+            Search
+        </button>
+    </form>
+    <div id="main">
+    </div>
+    <script>
+    var $spinner = document.getElementById('spinner');
+    var $query = document.getElementById('query');
+    var $main = document.getElementById('main');
+
+    var flickrApiKey = '63ab1df73d9315d46c625d40bd959349';
+    var flickrApiUri = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=' + flickrApiKey + '&format=json&nojsoncallback=1';
+
+    function runQuery() {
+
+        $main.innerHTML = '';
+        $spinner.classList.add('is-active');
+
+        fetch(flickrApiUri + '&text=' + $query.value)
+            .then(function(res) {
+                return res.json()
+            })
+            .then(function(res) {
+                var photosArr = res.photos.photo.map(function(p) {
+                    return constructPhotoUrl(p.farm, p.server, p.id, p.secret);
+                })
+                return photosArr;
+            })
+            .then(function(arr) {
+                console.log(arr)
+                arr.slice(0, 20).forEach(function(uri) {
+                    constructAndAddImage(uri);
+                })
+                $spinner.classList.remove('is-active');
+            })
+            .catch(function(err) {
+                console.log(err);
+                $spinner.classList.remove('is-active');
+            })
+    }
+
+    function constructAndAddImage(url) {
+        var img = new Image();
+        img.src = url;
+        $main.appendChild(img);
+    }
+
+    function constructPhotoUrl(farmId, serverId, id, secret) {
+        return ('https://farm' + farmId + '.staticflickr.com/' + serverId + '/' + id + '_' + secret + '.jpg');
+    }
+    </script>
+</body>
+
+</html>
